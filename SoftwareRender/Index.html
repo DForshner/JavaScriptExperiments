@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML5 Software Rendering</title>
+	<style>
+		canvas {width: 640px; height: 480px;}
+	</style>
+	<script src="babylon.math.js"></script>
+	<script src="Engine1.js"></script>
+	<script src="Source1.js"></script>
+	<script src="Engine2.js"></script>
+	<script src="Source2.js"></script>
+</head>
+<body>
+	<div>
+	<p><a href="http://blogs.msdn.com/b/davrous/archive/2013/06/13/tutorial-series-learning-how-to-write-a-3d-soft-engine-from-scratch-in-c-typescript-or-javascript.aspx">Based on this</a></p>
+	<button onclick="initExample1()">Example 1</button>
+	<button onclick="initExample2()">Example 2</button>
+	</div>
+	<div>
+	<canvas id="frontBuffer" width="160" height="100" style="background-color: black;"></canvas>
+	</div>
+</body>
+</html>

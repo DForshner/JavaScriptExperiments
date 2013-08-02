@@ -1,0 +1,120 @@
+<html>
+	<head>
+	</head>
+	<body>
+	</body>
+	
+	<script type="application/javascript">
+   
+	// Web workers are scripts that that run in their own background thread independent from the main
+	// event loop.  Using background thread for intensive/blocking processing allow the main UI thread
+	// remain responsive.
+   
+	//
+	// Example: Inline Dedicated Worker
+	//
+	
+	// The module pattern normally creates an anonymous function and executes it immediately.
+	// Instead we are going to create the code inside a closure but we won't execute it immediately.
+	var workerFunction = ( function() {
+		onmessage = function(e) {
+			self.postMessage("Web Worker 1 - Message: " + e.data);
+		};
+	} ); // Note the missing () around the the anonymous function.  We want this to be a function declaration instead of a function expression.
+
+	// Normally web workers are created in a separate js file but they can also be created in-line using Blob().
+	// A blob object represents a file-like object of immutable, raw data.
+	
+	// Unpack the worker function declaration into a blob object with .toString()
+	var blob = new Blob(['(' + workerFunction.toString() + ')();'], {type: "text/javascript"});
+	
+	// createObjectURL creates a simple URL which is used to reference the DOM blob object created earlier.
+	// Note: In chrome the URL: chrome://blob-internals/ can be used to see currently loaded blobs.
+	var blobURL = window.URL.createObjectURL(blob);
+	
+	// Create in-line web worker
+	var worker = new Worker(blobURL);	
+    worker.onmessage = function(e) 
+    {
+       console.log(e.data);
+    };
+	worker.onerror = function(e){
+		throw new Error(e.message + " (" + e.filename + ":" + e.lineno + ")");
+	};
+	
+	// Start the worker
+    worker.postMessage("Start Worker 1!");
+
+	//
+	// Example: Passing in document location
+	//
+	
+	var workerFunction2 = ( function() {
+		self.onmessage = function(e) {
+		
+			// A quick and dirty debugging solution is to throw an error
+			// throw JSON.stringify({data:e.data})
+			
+			self.postMessage("Web Worker 2 - Location: " + e.data.url);
+		};
+	} );
+	
+	var blob2 = new Blob(['(' + workerFunction2.toString() + ')();'], {type: "text/javascript"});
+	var blobURL2 = window.URL.createObjectURL(blob2);
+	
+	// Create worker
+	var worker2 = new Worker(blobURL2);
+    worker2.onmessage = function(e) 
+    {
+		console.log(e.data);
+    };
+    worker2.onerror = function(e){
+		throw new Error(e.message + " (" + e.filename + ":" + e.lineno + ")");
+	};
+
+	worker2.postMessage({ url: document.location.toString()});	
+	
+	//
+	// Example: Debugging
+	//
+	
+	var workerFunction3 = ( function() {
+		self.onmessage = function(e) {
+			self.postMessage({ type: "debug", message: "Web Worker 3 - Start" });
+			
+			self.postMessage({ type: "info", message: "Web Worker 3 - Message: " + e.data});
+			
+			self.postMessage({ type: "debug", message: "Web Worker 3 - End" });
+		};
+	} );
+	
+	var blob3 = new Blob(['(' + workerFunction3.toString() + ')();'], {type: "text/javascript"});
+	var blobURL3 = window.URL.createObjectURL(blob3);
+	
+	// Create worker
+	var worker3 = new Worker(blobURL3);
+    worker3.onmessage = function(e) 
+    {
+		if (e.data.type == "debug")
+			console.log("Web Worker 3 - Debug Message: " + e.data.message);
+		else
+			console.log(e.data.message);
+    };
+	worker3.onerror = function(e){
+		throw new Error(e.message + " (" + e.filename + ":" + e.lineno + ")");
+	};
+	
+	worker3.postMessage("Start Worker 3!");
+	
+	//
+	// Cleanup - Cleanup blob objects when user leaves page
+	//
+	
+	window.onunload=function(){
+		window.URL.revokeObjectURL(blobURL);
+		window.URL.revokeObjectURL(blobURL2);
+		window.URL.revokeObjectURL(blobURL3);
+	};
+	
+	</script>
+</html>

@@ -1,0 +1,202 @@
+<html>
+	<head>
+	</head>
+	<body>
+	</body>
+	
+	<script type="application/javascript">
+ 
+	// The Module Pattern uses an anonymous closure to provide privacy and state to the code that
+	// runs inside of it for the lifetime of the application.  It does this by creating a 
+	// global singleton object (self-executed method) with inner variables and methods that are
+	// not accessible outside of the closure.
+
+	// Example 1 - Simple
+	// The code exists inside an anonymous function literal that immediately executes itself.
+	// (Immediately Invoked Function Expression)
+
+	console.log("Example 1");
+
+	function calculate() { return 6 * 7; }
+	console.log( (calculate)() );
+	// Gives the same result as
+	console.log( (function() { return 6 * 7; })() );
+
+	// Example 2 - Module Export
+
+	var Module = (function () { //Single Global Variable "Module"
+		// Private: Variables are only accessible within their original scope.
+		var privateVariable = "some private value";     
+		var privateMethod = function () {
+			return Math.floor(Math.random()*11); // creates one random number.
+		}  
+		return { //returning one anonymous object literal that would expose privileged methods.
+			// Privileged: Allow variables to be accessible outside of the closure.
+			privilegedProperty : 10000000,
+			privilegedMethod : function () {
+				return privateMethod ();  // Can access private methods and variables.
+			}
+		} 
+	}) (); //Self executing method.
+
+	console.log("Example 2");
+	// console.log(Module.privateVariable); // Gives has no method error
+	// console.log(Module.privateMethod()); // Gives has no method error
+	console.log(Module.privilegedProperty);
+	console.log(Module.privilegedMethod());
+
+	// Example 3 - Revealing Module Pattern
+	// A variation that uses the same syntax for both internal & external constructs.
+	// Allows you to have more consistent naming.
+
+	var RevealingModule = (function () {
+		var privateVariable = 5;
+		var privateMethod = function () {
+		   return privateVariable;
+		}
+		
+		var publicProperty = 42;
+		var publicMethod = function () {
+		   return privateMethod();
+		};
+		
+		// Return the object that is assigned to Module
+		return {
+			publicProperty : publicProperty,
+			publicMethod : publicMethod
+		} 
+	}) ();
+
+	console.log("Example 3");
+	console.log(RevealingModule.publicProperty);
+	console.log(RevealingModule.publicMethod());
+
+	// Example 4 - This syntax
+	// A variation that uses the this keyword.
+
+	var ThisModule = (function() {
+		var privateProperty = 5;
+		var privateMethod = function () {
+			return privateProperty;
+		};
+		this.publicProperty = 32;
+		this.publicMethod = function () {
+			return privateMethod();
+		}
+		return this;
+	}) ();
+
+	console.log("Example 4");
+	console.log(ThisModule.publicProperty);
+	console.log(ThisModule.publicMethod());
+
+	// Example - Augmenting Modules (Sub Modules)
+	// Adds functionality to an existing modules by creating a new object inside the
+	// existing module.
+
+	//Augmenting the module with submodule
+	Module.augmented = (function ( ) {
+
+		// Private
+		var privateAugmentedVariable = 100; 
+		var privateAugmentedMethod = function (num) {
+		   return num * privateAugmentedVariable;
+		};
+		return {
+			privilegedAugmentedMethod : function() {
+				//access to private variable because of closure.
+				return privateAugmentedMethod(Module.privilegedMethod()); 
+			}
+		};
+	})();
+
+	console.log("Example 5");
+	console.log(Module.augmented.privilegedAugmentedMethod());
+
+	// Example - Apply method
+	// String augmentation by overriding the object context in 
+	// which a function is evaluated.
+
+	var Module = (function() {
+	  this.augmentedMethod = function() {
+		  return "This is now augmented!";
+	  };
+	  return this;
+	}).apply(Module);
+
+	console.log("Example 6");
+	console.log(Module.privilegedProperty); // Can still access original properties & methods
+	console.log(Module.privilegedMethod());
+	console.log(Module.augmentedMethod());
+
+	// Example 7 - Protected properties & methods
+	// One module creates a public reference to a private variable, another modules copies it, and deletes
+	// the public reference when complete.
+
+	var ProtectedModule = (function() {
+		var protectedData = 909;
+		var utils = {
+			//  Adds new properties to an object,
+			extend : function(root, props) {
+			for(var key in props) {
+			  if(props.hasOwnProperty(key)) {
+				root[key] = props[key];
+			  }
+			} return root;
+		  },
+		  // Copies a property and then deletes the original.
+		  // Needs separate arguments for the object and the property-key, 
+		  // because objects in JavaScript are passed by reference.
+		   
+		  privatise : function(root, prop) {
+			var data = root[prop];
+			try { delete root[prop]; } catch(ex) { root[prop] = null; }
+			return data;
+		  }
+		};
+		this.publicMethod = function() {
+			return protectedData;   
+		}
+		return utils.extend(this, { protectedData : protectedData, utils : utils } );
+	})();
+
+	console.log("Example 7");
+	console.log(ProtectedModule.publicMethod());
+
+	var ExtendedProtectedModule = (function() {
+	  var protectedProperties = this.utils.privatise(this, 'protectedProperties');
+	  var utils = this.utils.privatise(this, 'utils');
+	  return this;
+	}).apply(ProtectedModule);
+
+	console.log(ExtendedProtectedModule.publicMethod());
+
+
+	// Example - Extending Modules
+	// Extend exiting modules by wrapping them inside a new module.  This allows us to
+	// access and/or override the existing methods of the enclosed modules.
+
+	var ExtendedModule = ( function (oldModule) {
+		var parent = oldModule;
+
+		// overriding the existing privileged method.
+		parent.privilegedMethod = function ( ){
+			 return "this has been overridden";
+		};
+		var privateMethod2 = function ( ) {
+			parent.privilegedMethod();
+		}
+		
+		return {
+			extendedPrivilegedMethod : function ( ) {
+				 return parent.privilegedMethod() + " and extended";
+			}
+		};
+	} )(Module); // Existing module that I want to extend is passed in.
+
+	console.log("Example 8");
+	console.log(ExtendedModule.privilegedProperty);
+	console.log(Module.privilegedMethod());
+	console.log(ExtendedModule.extendedPrivilegedMethod());
+	</script>
+</html>
