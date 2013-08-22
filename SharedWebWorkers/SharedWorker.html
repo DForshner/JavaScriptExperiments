@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+  <body>
+  <textarea cols=80 rows=20 id="output"></textarea>
+
+  <script>
+    // The first call creates a shared worker.
+    // Subsequent connections will connect to the 
+    // existing instance of sharedworker1
+    var worker = new SharedWorker("shared-worker.js", "sharedworker1");
+
+    // setup message event on port object
+    worker.port.addEventListener("message", function(event) {
+      document.getElementById("output").value += event.data + "\r\n";
+    }, false);
+
+    // port.start() must be called before any messages can be received.
+    worker.port.start();
+
+    // send message to shared worker.
+    worker.port.postMessage("Signal");
+  </script>
+
+  <p>Chrome will give a security exception when this is run locally
+  (file://url).</p>
+  <p>The easiest way to work around this is to start a local HTTP server.
+  Python can be used to serve the files in the current directory on
+  local host port 8000. EX: http://0.0.0.0:8000/SharedWorker.html<//p>
+  <p># Python 2.x python -m SimpleHTTPServer</p>
+  <p># Python 3.x python -m http.server</p>
+
+  </body>
+</html>
