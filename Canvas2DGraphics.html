@@ -1,0 +1,584 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+	<head>
+		<meta charset="UTF-8">
+		<title>Drawing with the "2D" Canvas</title>
+		<style>
+		</style>
+	</head>
+	<body>
+		<div>
+			<h2>Drawing with the "2D" Canvas</h2>
+			<canvas id="canvas" width=500 height=500></canvas>
+		</div>
+   	<div id="main-menu">
+			<ul id="demo-menu">
+					<li><button name="rectangle">Rectangle Demo</button>
+					<li><button name="triangle">Triangle</button>
+					<li><button name="arcs-circles">Arcs & Circles</button>
+					<li><button name="bezier">Bezier curves</button>
+					<li><button name="clipping">Clipping paths</button>
+					<li><button name="line-caps-joints">Line Caps & Joints</button>
+					<li><button name="gradients">Gradients</button>
+					<li><button name="shadow">Shadow Effects</button>
+					<li><button name="state">Canvas State Stack</button>
+					<li><button name="rotate">Rotation</button>
+			</ul>
+    </div>
+
+		<script>
+
+			// Define modules
+			var app = {
+				common : {},
+				demo : {}
+			};
+
+			// Common code
+			app.common = ( function() {
+
+				function getCanvasContext() {
+					var canvas = document.getElementById("canvas");
+					console.log("Getting ", canvas.width, "X", canvas.height, " canvas");
+					return canvas.getContext("2d");
+				}
+
+				function getCanvas() {
+					var canvas = document.getElementById("canvas");
+					console.log("Getting ", canvas.width, "X", canvas.height, " canvas");
+					return canvas;
+
+				}
+
+				// Clears canvas (also clears fill and stroke styles)
+				function clearCanvas() {
+					var canvas = document.getElementById("canvas");
+					canvas.width = canvas.width;
+				}
+
+				function bind(element, event, handler) {
+					if (typeof element == "string") {
+							element = document.getElementById(element);
+					}
+					console.assert(element != null);
+					element.addEventListener(event, handler, false)
+				}
+
+				function addCommentLowerRight(ctx, text) {
+					console.assert(ctx != undefined);
+					console.assert(typeof text === "string");
+
+					// Save the context state
+					ctx.save();
+
+					ctx.fillStyle = "black";
+					ctx.font = "14px Arial, sans-serif";
+					ctx.fillText(text, 400, 490, 100); // Set max width to 100 so text shrinks to fit.
+
+					// Restore the context state to whatever it was before
+					// this function was called.
+					ctx.restore();
+				}
+
+				// Public functions
+				return {
+					getCanvasContext : getCanvasContext,
+					getCanvas : getCanvas,
+					clearCanvas : clearCanvas,
+					bind : bind,
+					addCommentLowerRight : addCommentLowerRight
+				};
+			})();
+
+			app.demo["rectangle"] = ( function(ctx) {
+
+				function run() {
+					console.log("Running rectangle demo");
+					var ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "Rectangle Demo");
+
+					// Draw rectangle using lines
+					ctx.beginPath();
+					ctx.moveTo(100, 100);
+					ctx.lineTo(100, 300);
+					ctx.lineTo(200, 300);
+					ctx.lineTo(200, 100);
+					ctx.closePath();
+
+					ctx.strokeStyle = "blue";
+					ctx.lineWidth = 5.0;
+					ctx.stroke();
+
+					// rect - draw single rectangle
+					ctx.beginPath();
+					ctx.rect(250, 150, 200, 100); // (x1, y1, width, height)
+					ctx.fillStyle = "red";
+					ctx.fill();
+					ctx.strokeStyle = "black";
+					ctx.lineWidth = 2.0;
+					ctx.stroke();
+
+					// fillRect - draw single filled rectangle
+					ctx.fillStyle = "pink";
+					ctx.fillRect(250, 250, 200, 100); // (x1, y1, width, height)
+
+					// strokeRect - draw single rectangle
+					ctx.strokeStyle = "orange";
+					ctx.strokeRect(250, 350, 200, 100); // (x1, y1, width, height)
+
+					// clearRect - clears area
+					ctx.clearRect(150, 200, 150, 200);
+
+				}
+
+				// Public functions
+				return {
+					run : run
+				};
+			})();
+
+			app.demo["triangle"] = ( function(ctx) { 
+
+				function run() {
+					console.log("Running triangle demo");
+					var ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "Triangle Demo");
+
+					ctx.beginPath();
+					ctx.moveTo(250, 400);
+					ctx.lineTo(150, 200);
+					ctx.lineTo(350, 200);
+					ctx.closePath();
+
+					ctx.fillStyle = "orange";
+					ctx.fill();
+
+					ctx.strokeStyle = "red";
+					ctx.lineWidth = 2.0;
+					ctx.stroke();
+				}
+
+				// Public functions
+				return {
+					run : run
+				};
+			})();
+
+			app.demo["arcs-circles"] = ( function () {
+
+				function run() {
+					console.log("Running arcs & circles  demo");
+					var ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "Arcs & Circles Demo");
+
+					// two arcs shifted by 50
+					ctx.beginPath();
+					ctx.arc(50,100, 50, 0, Math.PI, true); // arc(x, y, radius, startAngle, endAngle, ccw)
+					ctx.arc(100,100, 50, 0, Math.PI, false);
+					ctx.closePath();
+					ctx.fillStyle = "red";
+					ctx.fill();
+
+					// 90 deg of arc
+					ctx.beginPath();
+					var nintyDeg = 90 * (180 / Math.PI); // Or Math.PI / 2
+					ctx.arc(50,175, 25, 0, nintyDeg, true);
+					ctx.closePath();
+					ctx.fillStyle = "blue";
+					ctx.fill();
+
+					// Pokemon ball?
+					ctx.beginPath();
+					ctx.arc(50,300,50,0, Math.PI, true);
+					ctx.moveTo(100,310);
+					ctx.arc(50,310,50,0, Math.PI, false);
+					ctx.closePath;
+					ctx.fillStyle = "red";
+					ctx.fill();
+
+					// Ninja?
+					ctx.beginPath();
+					ctx.arc(150,300,50,0, Math.PI, true);
+					ctx.arc(150,350,50,0, Math.PI, false);
+					ctx.closePath;
+					ctx.fillStyle = "black";
+					ctx.fill();
+
+					// Full circle
+					ctx.beginPath();
+					ctx.arc(300,300,100,0,2 * Math.PI, true);
+					ctx.closePath();
+					ctx.fillStyle = "pink";
+					ctx.fill();
+				}
+
+				return {
+					run : run
+				};
+			})();
+
+			app.demo["bezier"] = ( function() {
+
+				function run() {
+					console.log("Running bezier curve demo");
+					var ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "Bezier Curve Demo");
+
+					// 1 - control point
+					ctx.beginPath();
+					ctx.moveTo(50,100);
+					ctx.lineTo(100,50);
+					ctx.lineTo(200,100);
+					ctx.strokeStyle = "black";
+					ctx.stroke();
+
+					// 1 - quadratic curve
+					ctx.beginPath();
+					ctx.moveTo(50,100);
+					ctx.quadraticCurveTo(100, 50, 200, 100); // (cx, cy, x, y)
+					ctx.fillStyle = "red";
+					ctx.fill();
+
+					// 2 - control point
+					ctx.beginPath();
+					ctx.moveTo(50,300);
+					ctx.lineTo(175,175);
+					ctx.lineTo(200,300);
+					ctx.strokeStyle = "black";
+					ctx.stroke();
+
+					// 2 - chaining quadratic curves
+					ctx.beginPath();
+					ctx.moveTo(50,300);
+					ctx.quadraticCurveTo(175,175,200,300);
+					ctx.moveTo(200,300);
+					ctx.quadraticCurveTo(250,375,375,300);
+					ctx.fillStyle = "blue";
+					ctx.fill();
+
+					// 3 - control points
+					ctx.beginPath();
+					ctx.moveTo(400,50);
+					ctx.lineTo(350,110);
+					ctx.lineTo(475,175);
+					ctx.lineTo(400,300);
+					ctx.strokeStyle = "black";
+					ctx.stroke();
+
+					// 3 - Cubic bezier curve
+					ctx.beginPath();
+					ctx.moveTo(400,50);
+					ctx.bezierCurveTo(350,110,475,175,400,300);
+					ctx.fillStyle = "green";
+					ctx.fill();
+				}
+
+				// Public functions
+				return {
+					run : run
+				};
+
+			})();
+
+			app.demo["clipping"] = ( function () {
+
+				function run() {
+					console.log("Running clipping path demo");
+					var ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "Clipping Path Demo");
+
+					// Fill screen
+					ctx.fillStyle = "red";
+					ctx.fillRect(0,0,500,480);
+
+					// Hex clipping path
+					ctx.beginPath();
+					ctx.moveTo(100,200);
+					ctx.lineTo(200,100);
+					ctx.lineTo(300,100);
+					ctx.lineTo(400,200);
+					ctx.lineTo(400,300);
+					ctx.lineTo(300,400);
+					ctx.lineTo(200,400);
+					ctx.lineTo(100,300);
+					ctx.lineTo(100,200);
+					ctx.clip();
+
+					// Fill screen again
+					ctx.fillStyle = "green";
+					ctx.fillRect(0,0,500,500);
+				}
+
+				// Public functions
+				return {
+					run : run
+				};
+			})();
+
+
+			app.demo["line-caps-joints"] = ( function() {
+
+				ctx = {};
+
+				function drawDot(x,y) {
+					ctx.fillStyle = "red";
+					ctx.beginPath();
+					ctx.arc(x,y, 5, 0, 2 * Math.PI, true); 
+					ctx.closePath();
+					ctx.fill();
+				}
+
+				function drawAngle(x, y, style) {
+					ctx.beginPath();
+					ctx.moveTo(x,y);
+					ctx.lineTo(x, y + 100);
+					ctx.lineTo(x + 100, y + 100);
+					ctx.strokeStyle = "blue";
+					ctx.lineWidth = 25;
+					ctx.lineCap = style.capStyle || "butt";
+					ctx.lineJoin = style.jointStyle || "miter";
+					ctx.stroke();
+					
+					// Indicate end of line
+					drawDot(x,y);
+					drawDot(x,y+100);
+					drawDot(x+100,y+100);
+				}
+
+				function run() {
+					console.log("Running line caps & joints demo");
+					ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "Line Caps & Joints Demo");
+
+					// line caps
+					drawAngle(50,100, { capStyle : "butt" }); // default
+					drawAngle(200, 100, { capStyle : "round" });
+					drawAngle(350, 100, { capStyle : "square" });
+
+					// line joints
+					drawAngle(50, 300, { jointStyle : "bevel" });
+					drawAngle(200, 300, { jointStyle : "round" });
+					drawAngle(350, 300, { jointStyle : "miter" }); // default
+				}
+
+				// Public functions
+				return {
+					run : run
+				};
+
+			})();
+
+			app.demo["gradients"] = ( function() {
+				
+				function run() {
+					console.log("Running gradients demo");
+					var ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "Gradients Demo");
+
+					// (x1,y1,x2,y2)
+					var lineGradient = ctx.createLinearGradient(50,50,200,400);
+					lineGradient.addColorStop(0, "green");
+					lineGradient.addColorStop(0.5, "yellow");
+					lineGradient.addColorStop(1, "red");
+					ctx.fillStyle = lineGradient;
+					ctx.fillRect(10,10,240,440);
+
+					// (circle1x, circle1y, circle1radius, circle2x, circle2y, circle2radius)
+					var radialGradient = ctx.createRadialGradient(
+						400, 250, 50,
+						400, 250, 150
+					);
+					radialGradient.addColorStop(0, "red");
+					radialGradient.addColorStop(0.5, "yellow");
+					radialGradient.addColorStop(1, "green");
+					ctx.fillStyle = radialGradient;
+					ctx.beginPath();
+					ctx.arc(370, 300, 120, 0, 2 * Math.PI, true);
+					ctx.fill();
+				}
+
+				// Public methods
+				return {
+					run : run
+				};
+			})();
+
+			app.demo["shadow"] = ( function() {
+				
+				function run() {
+					console.log("Running shadow effects demo");
+					var ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "Shadow Effects Demo");
+
+					ctx.shadowColor = "black";
+					ctx.shadowOffsetX = 20;
+					ctx.shadowOffsetY = 20;
+					ctx.shadowBlur = 20;
+
+					ctx.lineWidth = 15;
+					ctx.strokeStyle = "darkblue";
+					ctx.fillStyle = "blue";
+
+					// 1 - Rectangle with only fill
+					ctx.fillRect(50,50,200,150);
+
+					// 2 - Rectangle with only stroke
+					ctx.strokeRect(150,150,200,150);
+
+					// 3 - Rectangle with both fill & stroke
+					// Prevent shadow from appearing inside rectangle that occurs with fill + stroke
+					// by setting shadown to transparent while stroking
+					ctx.fillRect(250,250,200,150);
+					ctx.shadowColor = "transparent";
+					ctx.strokeRect(250,250,200,150);
+					ctx.shadowColor = "black";
+
+					ctx.shadowBlur = 5;
+					ctx.beginPath();
+					ctx.arc(400,100,50,0,2 * Math.PI, true);
+					ctx.closePath();
+					ctx.fill();
+				}
+
+				// Public functions
+				return {
+					run : run
+				};
+
+			})();
+
+			app.demo["state"] = ( function() {
+				
+				var ctx = {};
+
+				function redRect(x1,y1,x2,y2) {
+					ctx.save();
+					
+					ctx.lineCap = "round";
+					ctx.lineJoin = "round";
+					ctx.strokeStyle = "red";
+					ctx.lineWidth = 20.0;
+					ctx.strokeRect(x1, y1, (x2 - x1), (y2 - y1));
+
+					ctx.restore();
+				}
+
+				function greenRect(x1,y1,x2,y2) {
+					ctx.save();
+					
+					ctx.lineCap = "butt";
+					ctx.lineJoin = "miter";
+					ctx.strokeStyle = "green";
+					ctx.lineWidth = 10.0;
+					ctx.strokeRect(x1, y1, (x2 - x1), (y2 - y1));
+
+					ctx.restore();
+				}
+
+				function run() {
+					console.log("Running canvas state stack demo");
+					ctx = app.common.getCanvasContext();
+
+					app.common.addCommentLowerRight(ctx, "State Stack Demo");
+
+					// Blue
+					ctx.strokeStyle = "blue";
+					ctx.lineWidth = 1;
+					ctx.strokeRect(50,50,50,50);
+
+					redRect(100,100,150,150);
+
+					// Blue
+					ctx.strokeRect(150,150,50,50);
+
+					greenRect(200,200,300,300);
+
+					// Blue
+					ctx.strokeRect(300,300,50,50);
+				}
+
+				// Public functions
+				return {
+					run : run
+				}
+			})();
+
+			app.demo["rotate"] = ( function () {
+
+				function run() {
+					console.log("Running rotation demo");
+					var canvas = app.common.getCanvas();
+					var ctx = canvas.getContext("2d");
+
+					app.common.addCommentLowerRight(ctx, "Rotation Demo");
+
+					// Scale coordinates to be between 0.0 and 1.0
+					// so we don't need to know actual dimensions
+					ctx.scale(canvas.width, canvas.height);
+
+					// Draw backround
+					var gradient = ctx.createRadialGradient(
+						0.5, 0.5, 0.125,
+						0.5, 0.5, 0.75
+					);
+					gradient.addColorStop(0.1, "green");
+					gradient.addColorStop(0.9, "blue");
+					ctx.fillStyle = gradient;
+					ctx.fillRect(0,0,1,0.95);
+
+					ctx.translate(0.5,0.5);
+					ctx.lineWidth = 0.005;
+
+					// Draw rotated inner lines
+					ctx.beginPath();
+					for (var i = 0; i < 51; i++) {
+						ctx.rotate(1 / 50 * Math.PI * 2);
+						ctx.lineTo(0.20, 0);
+						ctx.lineTo(0.30, 0.0);
+					}
+					ctx.strokeStyle = "red";
+					ctx.stroke();
+
+					// Draw counter rotated outer lines
+					ctx.beginPath();
+					for (var i = 61; i >= 0 ; i--) {
+						ctx.rotate(1 / 60 * Math.PI * 2);
+						ctx.lineTo(0.35, 0);
+						ctx.lineTo(0.40, 0.0);
+					}
+					ctx.strokeStyle = "purple";
+					ctx.stroke();
+				}
+
+				return {
+					run : run
+				}
+
+			})();
+
+			// main entry point
+			window.addEventListener("load", function() {
+
+				app.common.bind("demo-menu", "click", function(e) {
+					if (e.target.nodeName.toLowerCase() === "button") {
+						var action = e.target.getAttribute("name");
+						console.log("button press");
+
+						app.common.clearCanvas();
+						app.demo[action].run();
+					}
+				});
+
+			}, false);
+
+		</script>
+	</body>
+</html>
