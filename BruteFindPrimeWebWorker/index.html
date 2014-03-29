@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+<head>
+  <meta charset="UTF-8">
+  <script src="sizzle.js"></script>
+  <script src="bruteprime.js"></script>
+</head>
+<body>
+  Number (n): <input id="number" value="23">
+  <button id="check">Is prime?</button><br/><br/>
+  <button id="click-test">Try to click</button>
+
+  <script>
+    var $ = Sizzle;
+
+    $("#check")[0].addEventListener("click", function() {
+      var n = parseInt($("#number")[0].value, 10);
+      var res = isPrime(n);
+
+      if (res) {
+        alert(n + " is a prime number");
+      } else {
+        alert(n + " is NOT a prime number");
+      }
+    }, false);
+
+    $("click-test")[0].addEventListener("click", function() {
+      alert("Hello!");
+    }, false);
+
+    </script>
+
+</body>
+</html>
