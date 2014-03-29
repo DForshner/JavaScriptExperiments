@@ -1,4 +1,4 @@
 JavaScriptExperiments
 =====================
 
-A motley assortment of snippets, language idioms, algorithms, and puzzles.
+This is an archive of exploratory (throw away) code in case I want to find it later.
