@@ -69,14 +69,12 @@ console.log("unchanged records2:", unchangedRecords2);
 //
 // Bonus Round: Upsert map (object) example where object does not have an index field.
 //
-
 var storedRecords3 = {
     1: { name: "org" },
     2: { name: "toUpdate" },
     3: { name: "org" },
     4: { name: "org" }
 };
-
 var recordsFromServer3 = {
     2: { name: "updated" },
     5: { name: "new" }
