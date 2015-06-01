@@ -67,13 +67,14 @@ var unchangedRecords2 = _.filter(storedRecords2, function(stored) {
 console.log("unchanged records2:", unchangedRecords2);
 
 //
-// Bonus Rround: Upsert map (object) example where object does not have an index field.
+// Bonus Round: Upsert map (object) example where object does not have an index field.
 //
+
 var storedRecords3 = {
-    1: { name: "a" },
+    1: { name: "org" },
     2: { name: "toUpdate" },
-    3: { name: "a" },
-    4: { name: "a" }
+    3: { name: "org" },
+    4: { name: "org" }
 };
 
 var recordsFromServer3 = {
@@ -82,22 +83,22 @@ var recordsFromServer3 = {
 };
 
 var updatedRecords3 = _.chain(storedRecords3)
-    .map(function(value, key) { return { values: value, key: key }; })
-    .filter(function(x) { return recordsFromServer3.hasOwnProperty(x.key); })
-    .map(function(x) { return x.values; })
+    .keys()
+    .filter(function(key) { return recordsFromServer3.hasOwnProperty(key); })
+    .map(function(key) { return recordsFromServer3[key]; })
     .value();
 console.log("updated records3:", updatedRecords3);
                                       
 var newRecords3 = _.chain(recordsFromServer3)
-    .map(function(value, key) { return { values: value, key: key }; })
-    .filter(function(x) { return !storedRecords3.hasOwnProperty(x.key); })
-    .map(function(x) { return x.values; })
+    .keys()
+    .filter(function(key) { return !storedRecords3.hasOwnProperty(key); })
+    .map(function(key) { return recordsFromServer3[key]; })
     .value();
 console.log("new records3:", newRecords3);
 
 var unchangedRecords3 = _.chain(storedRecords3)
-    .map(function(value, key) { return { values: value, key: key }; })
-    .filter(function(x) { return !recordsFromServer3.hasOwnProperty(x.key); })
-    .map(function(x) { return x.values; })
+    .keys()
+    .filter(function(key) { return !recordsFromServer3.hasOwnProperty(key); })
+    .map(function(key) { return storedRecords3[key]; })
     .value();
 console.log("unchanged records3:", unchangedRecords3);
