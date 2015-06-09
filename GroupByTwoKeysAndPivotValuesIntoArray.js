@@ -2,6 +2,8 @@
 // a Values property that is an array of values that match the
 // given key combination.
 
+// Requires: underscore/lodash
+
 var raw = [
     { KeyA: "A", KeyB: 11, Value: 100 },
     { KeyA: "A", KeyB: 11, Value: 200 },
