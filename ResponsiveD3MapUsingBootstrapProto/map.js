@@ -1,11 +1,8 @@
 var app = {};
 
 app.config = {
-
 	width: 960,
-	
 	height: 500,
-	
 	aspect: 0.5,
 	
 	pointsOfInterest: [
@@ -22,7 +19,6 @@ app.render = {
 	},
 
 	drawMap: function() {
-	
 		// Determine the width of the containing element and scale to fit.
 		var width = $(".map-content").width();
 		var height = width * app.config.aspect;
